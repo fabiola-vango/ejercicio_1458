@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registro de Citas - Clínica Odontológica</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #e0f0ff;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      border-top: 6px solid #007BFF;
+    }
+    h2 {
+      text-align: center;
+      color: #0056b3;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #004080;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #cccccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .success {
+      text-align: center;
+      color: green;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>Registro de Citas</h2>
+    <form id="appointmentForm">
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" name="nombre" required>
+
+      <label for="correo">Correo Electrónico:</label>
+      <input type="email" id="correo" name="correo" required>
+
+      <label for="telefono">Teléfono:</label>
+      <input type="tel" id="telefono" name="telefono" required>
+
+      <label for="fecha">Fecha de Cita:</label>
+      <input type="date" id="fecha" name="fecha" required>
+
+      <label for="motivo">Motivo de la Cita:</label>
+      <textarea id="motivo" name="motivo" rows="3" required></textarea>
+
+      <button type="submit">Registrar Cita</button>
+      <div class="success" id="successMessage"></div>
+    </form>
+  </div>
+
+  <script type="module">
+    // Importamos funciones necesarias de Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Configuración de tu proyecto Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAnp4lkRr1ww_BBNakxR-nnXRqBcK4DLkY",
+      authDomain: "ejercicio-e-1458.firebaseapp.com",
+      projectId: "ejercicio-e-1458",
+      storageBucket: "ejercicio-e-1458.appspot.com",
+      messagingSenderId: "59314524319",
+      appId: "1:59314524319:web:728ad496055198b03e12aa"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Capturamos el formulario
+    const form = document.getElementById('appointmentForm');
+    const successMessage = document.getElementById('successMessage');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Obtenemos los datos
+      const nombre = form['nombre'].value;
+      const correo = form['correo'].value;
+      const telefono = form['telefono'].value;
+      const fecha = form['fecha'].value;
+      const motivo = form['motivo'].value;
+
+      try {
+        // Guardamos en la colección "citas"
+        await addDoc(collection(db, "citas"), {
+          nombre,
+          correo,
+          telefono,
+          fecha,
+          motivo
+        });
+
+        // Mostramos mensaje de éxito
+        successMessage.textContent = "¡Cita registrada exitosamente!";
+        form.reset();
+
+        // Limpiamos mensaje después de 3 segundos
+        setTimeout(() => {
+          successMessage.textContent = "";
+        }, 3000);
+      } catch (error) {
+        console.error("Error al registrar cita: ", error);
+        alert("Error al registrar la cita, inténtalo de nuevo.");
+      }
+    });
+  </script>
+
+</body>
+</html>
